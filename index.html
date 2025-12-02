@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexaBot - Penghasil Saldo Telegram</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 18px 12px 30px;
+      background: radial-gradient(circle at top, #1e40af, #020617 55%, #000000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      color: #e5e7eb;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.97);
+      border-radius: 22px;
+      padding: 20px 18px 22px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    .badge-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #0ea5e9, #6366f1);
+      color: #e5e7eb;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    .status-pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(45, 212, 191, 0.55);
+      color: #6ee7b7;
+      background: radial-gradient(circle at top, rgba(16, 185, 129, 0.3), transparent);
+      white-space: nowrap;
+    }
+
+    .title {
+      font-size: 23px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #f9fafb;
+      line-height: 1.25;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .highlight-box {
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.3), rgba(15, 23, 42, 0.95));
+      border-radius: 16px;
+      padding: 11px 12px 11px;
+      font-size: 12px;
+      border: 1px solid rgba(96, 165, 250, 0.6);
+      margin-bottom: 14px;
+    }
+
+    .highlight-title {
+      font-weight: 600;
+      color: #bfdbfe;
+      margin-bottom: 4px;
+    }
+
+    .highlight-list {
+      list-style: none;
+    }
+
+    .highlight-list li {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .highlight-emoji {
+      width: 16px;
+      text-align: center;
+    }
+
+    .section {
+      border-radius: 16px;
+      padding: 10px 11px 11px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.8);
+      margin-bottom: 12px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .section-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e5e7eb;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .steps {
+      list-style: none;
+      font-size: 12px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .step-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 8px;
+      row-gap: 1px;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(129, 140, 248, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #a5b4fc;
+      margin-top: 1px;
+    }
+
+    .step-label {
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .step-desc {
+      grid-column: 2 / 3;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .benefits {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .benefit-item {
+      font-size: 11px;
+      padding: 7px 7px;
+      border-radius: 12px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: radial-gradient(circle at top, rgba(30, 64, 175, 0.7), rgba(15, 23, 42, 0.9));
+    }
+
+    .benefit-label {
+      font-weight: 600;
+      margin-bottom: 2px;
+      color: #e5e7eb;
+    }
+
+    .benefit-text {
+      color: #9ca3af;
+    }
+
+    .list-check {
+      list-style: none;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .list-check li {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 4px;
+      color: #d1d5db;
+    }
+
+    .list-icon {
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .divider {
+      margin: 10px 0;
+      border-top: 1px dashed rgba(75, 85, 99, 0.8);
+    }
+
+    .contact {
+      border-radius: 16px;
+      padding: 10px 11px 11px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px dashed rgba(148, 163, 184, 0.75);
+      margin-bottom: 12px;
+    }
+
+    .contact-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .contact-label {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .contact-value {
+      font-size: 12px;
+      font-weight: 600;
+      color: #e5e7eb;
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn {
+      flex: 1;
+      text-align: center;
+      padding: 8px 10px;
+      font-size: 12px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+      display: inline-block;
+      border: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #2563eb, #1d4ed8);
+      color: #f9fafb;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.85);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.9);
+      opacity: 0.96;
+    }
+
+    .faq {
+      border-radius: 16px;
+      padding: 10px 11px 8px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+
+    .faq-item {
+      padding: 6px 0;
+    }
+
+    .faq-q {
+      font-size: 12px;
+      font-weight: 600;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .faq-a {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .faq-q span:last-child {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .footer-note {
+      margin-top: 8px;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 14px 8px 24px;
+      }
+      .card {
+        padding: 16px 13px 18px;
+        border-radius: 18px;
+      }
+      .title {
+        font-size: 20px;
+      }
+      .subtitle {
+        font-size: 12px;
+      }
+      .buttons {
+        flex-direction: column;
+      }
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <main class="card">
+      <div class="badge-row">
+        <div class="badge">
+          ⚡ NexaBot <span>| Penghasil Saldo</span>
+        </div>
+        <div class="status-pill">Online & Aktif</div>
+      </div>
+
+      <h1 class="title">Penghasil Saldo Otomatis dari Telegram</h1>
+      <p class="subtitle">
+        NexaBot membantu kamu kumpulin saldo dari misi, tugas harian, dan event bonus. 
+        Cukup buka bot di Telegram, kerjakan misi, dan saldo otomatis tercatat di akunmu.
+      </p>
+
+      <!-- FITUR UTAMA -->
+      <section class="highlight-box">
+        <div class="highlight-title">Fitur Utama NexaBot</div>
+        <ul class="highlight-list">
+          <li>
+            <span class="highlight-emoji">🎯</span>
+            <span>Misi harian & tugas otomatis yang bisa dikerjakan kapan saja.</span>
+          </li>
+          <li>
+            <span class="highlight-emoji">💸</span>
+            <span>Bonus referral, event spesial, dan kesempatan dapat saldo ekstra.</span>
+          </li>
+          <li>
+            <span class="highlight-emoji">📲</span>
+            <span>Notifikasi realtime langsung dari bot Telegram saat saldo masuk.</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- CARA KERJA -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-dot"></div>
+          <div class="section-title">Cara Kerja NexaBot</div>
+        </div>
+        <ul class="steps">
+          <li class="step-item">
+            <div class="step-number">1</div>
+            <div class="step-label">Start bot & buat akun</div>
+            <div class="step-desc">
+              Klik tombol <strong>Mulai di Telegram</strong>, lalu ikuti instruksi bot untuk daftar (nama & nomor).
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-number">2</div>
+            <div class="step-label">Kerjakan misi</div>
+            <div class="step-desc">
+              Pilih misi yang tersedia: join channel, klik link, isi form, atau tugas harian lain yang diberikan bot.
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-number">3</div>
+            <div class="step-label">Saldo otomatis tercatat</div>
+            <div class="step-desc">
+              Setelah misi selesai & tervalidasi, saldo langsung masuk ke akun NexaBot kamu. Bisa dicek di menu saldo.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- KEUNTUNGAN -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-dot"></div>
+          <div class="section-title">Kenapa Pakai NexaBot?</div>
+        </div>
+
+        <div class="benefits">
+          <div class="benefit-item">
+            <div class="benefit-label">Transparan</div>
+            <div class="benefit-text">
+              Semua riwayat misi & saldo bisa dicek langsung di bot, nggak ribet tanya admin.
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-label">Fleksibel</div>
+            <div class="benefit-text">
+              Bisa dikerjakan dari HP kapan saja, cocok buat sampingan santai.
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-label">Support Aktif</div>
+            <div class="benefit-text">
+              Kalau ada kendala, owner & admin siap bantu via WhatsApp / Telegram.
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-label">Untuk Komunitas</div>
+            <div class="benefit-text">
+              Bisa dipakai bagi hasil saldo untuk tim, komunitas, atau member grup.
+            </div>
+          </div>
+        </div>
+
+        <ul class="list-check">
+          <li>
+            <span class="list-icon">✅</span>
+            <span>Saldo & misi tercatat otomatis tanpa harus screenshoot bukti tiap kali.</span>
+          </li>
+          <li>
+            <span class="list-icon">✅</span>
+            <span>Event bonus rutin untuk user aktif & pengguna baru.</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- CARA MULAI -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-dot"></div>
+          <div class="section-title">Cara Mulai</div>
+        </div>
+        <ul class="steps">
+          <li class="step-item">
+            <div class="step-number">1</div>
+            <div class="step-label">Klik tombol biru “Mulai di Telegram”.</div>
+          </li>
+          <li class="step-item">
+            <div class="step-number">2</div>
+            <div class="step-label">Tekan START di bot & baca panduan singkat.</div>
+          </li>
+          <li class="step-item">
+            <div class="step-number">3</div>
+            <div class="step-label">Langsung cobain 1–2 misi pertama.</div>
+          </li>
+        </ul>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- KONTAK -->
+      <section class="contact">
+        <div class="contact-row">
+          <span class="contact-label">Owner NexaBot</span>
+          <!-- GANTI NOMOR OWNER DI SINI -->
+          <span class="contact-value">0881-2345-6789</span>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">Telegram Bot</span>
+          <!-- GANTI USERNAME BOT DI SINI -->
+          <span class="contact-value">@NexaBotSaldo_bot</span>
+        </div>
+
+        <div class="buttons">
+          <!-- GANTI LINK WA & TELEGRAM DI BAWAH INI -->
+          <a href="https://wa.me/6285213670398" class="btn btn-secondary" target="_blank">
+            Chat Owner via WhatsApp
+          </a>
+          <a href="https://t.me/nexapointbot" class="btn btn-primary" target="_blank">
+            Mulai di Telegram
+          </a>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="faq">
+        <div class="section-header" style="margin-bottom:4px;">
+          <div class="section-dot"></div>
+          <div class="section-title">FAQ Singkat</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">
+            <span>Apakah NexaBot gratis?</span>
+            <span>+</span>
+          </div>
+          <div class="faq-a">
+            Daftar & pakai bot gratis. Kalau ada misi berbayar / premium, info akan dijelaskan jelas di dalam bot.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">
+            <span>Kapan saldo dibagikan?</span>
+            <span>+</span>
+          </div>
+          <div class="faq-a">
+            Jadwal penarikan / pembagian saldo biasanya diatur owner. Cek menu info / pengumuman di dalam bot.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">
+            <span>Apakah aman?</span>
+            <span>+</span>
+          </div>
+          <div class="faq-a">
+            Jangan pernah kirim OTP, PIN, atau password ke siapa pun. NexaBot hanya butuh data yang tertulis di panduan resmi.
+          </div>
+        </div>
+      </section>
+
+      <p class="footer-note">
+        Disclaimer: Hasil saldo tergantung misi yang diselesaikan dan aturan dari owner NexaBot. 
+        Gunakan secara bijak dan selalu cek info resmi dari owner sebelum mengikuti event atau promo apa pun.
+      </p>
+    </main>
+  </div>
+</body>
+</html>
